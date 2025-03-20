@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       
       // Si la respuesta es exitosa, obtener el token
-      const token = response.data.token;
+      const token = response.data;
 
       // Despachar la acción para almacenar el token en Redux
       dispatch(login(token));

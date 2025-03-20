@@ -33,6 +33,7 @@ interface Subtask {
 }
 
 export default function DashboardPage() {
+  const userId = useSelector((state: any) => state.auth.user?.id);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,21 +48,26 @@ export default function DashboardPage() {
   // Función para obtener las tareas del usuario
   const fetchTasks = async () => {
     try {
+      if (!userId) {
+        setError('Usuario no autenticado');
+        return [];
+      }
       const response = await axios.get(
-        'http://localhost:5000/api/tasks/user/67da4394ba06dfb725aa3e49',
+        `http://localhost:5000/api/tasks/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      return response.data; // Retorna las tareas
+      return response.data;
     } catch (error) {
       setError('Error al cargar las tareas');
       console.error(error);
-      return []; // Retorna un array vacío en caso de error
+      return [];
     }
   };
+
 
   // Función para obtener las subtareas de una tarea
   const fetchSubtasks = async (taskId: string) => {
@@ -273,7 +279,7 @@ export default function DashboardPage() {
           title: newTaskTitle,
           description: newTaskDescription,
           status: 'pendiente',
-          user: '67da4394ba06dfb725aa3e49',
+          user: `${userId}`,
         },
         {
           headers: {
